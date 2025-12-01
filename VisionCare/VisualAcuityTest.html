@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en" class="">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Visual Acuity Test - VisionCare</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Make sure the path to your style.css file is correct -->
+    <link rel="stylesheet" href="style.css"> 
+    
+    <!-- TensorFlow.js scripts for camera calibration -->
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs-core"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs-converter"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs-backend-webgl"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/face-detection"></script>
+
+</head>
+<body class="bg-slate-50 text-slate-800">
+
+    <div id="preloader">
+        <div class="preloader-logo">
+            <svg class="w-16 h-16 text-blue-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 010-.639l4.433-7.447A1 1 0 017.48 4h9.04a1 1 0 01.994.883l4.433 7.447a1.012 1.012 0 010 .639l-4.433 7.447A1 1 0 0116.52 20h-9.04a1 1 0 01-.994-.883l-4.433-7.447z" />
+                <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+            </svg>
+        </div>
+    </div>
+
+    <div id="app" class="max-w-7xl mx-auto p-4 md:p-8">
+        <header class="flex justify-between items-center pb-4 border-b border-slate-200">
+            <div class="flex items-center gap-3">
+                 <svg class="w-8 h-8 text-blue-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 010-.639l4.433-7.447A1 1 0 017.48 4h9.04a1 1 0 01.994.883l4.433 7.447a1.012 1.012 0 010 .639l-4.433 7.447A1 1 0 0116.52 20h-9.04a1 1 0 01-.994-.883l-4.433-7.447z" /><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
+                <h1 class="text-2xl font-bold">VisionCare</h1>
+            </div>
+             <nav class="hidden md:flex items-center gap-6">
+                <!-- Update nav links to point to the correct pages -->
+                <a href="index.html" class="nav-link text-slate-600 hover:text-blue-600 transition-colors">Home</a>
+                <a href="learn.html" class="nav-link text-slate-600 hover:text-blue-600 transition-colors">Learn</a>
+                <a href="symptom-checker.html" class="nav-link text-slate-600 hover:text-blue-600 transition-colors">Symptom Checker</a>
+                <a href="history.html" class="nav-link text-slate-600 hover:text-blue-600 transition-colors">Test History</a>
+                <button id="dark-mode-toggle" class="p-2 rounded-full hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors">
+                    <svg id="theme-icon-light" xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" /></svg>
+                    <svg id="theme-icon-dark" xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" /></svg>
+                </button>
+            </nav>
+        </header>
+
+        <main class="test-page-main">
+            <section id="test-screen" class="fade-in">
+                <div class="max-w-3xl mx-auto mt-8 bg-white p-8 rounded-2xl shadow-lg">
+                    <div class="mb-8">
+                        <div class="relative pt-1">
+                            <div class="flex mb-2 items-center justify-between">
+                                <div><span id="progress-text" class="text-xs font-semibold inline-block py-1 px-2 uppercase rounded-full text-blue-600 bg-blue-200">Step 1 of 2</span></div>
+                            </div>
+                            <div class="overflow-hidden h-2 mb-4 text-xs flex rounded bg-blue-200">
+                                <div id="progress-bar" style="width: 5%" class="shadow-none flex flex-col text-center whitespace-nowrap text-white justify-center bg-blue-600 transition-all duration-500"></div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div id="test-content" class="text-center">
+                        <!-- Step 1: Calibration -->
+                        <div id="calibration-step">
+                            <h3 class="text-2xl font-bold">Screen Calibration</h3>
+                            <p class="mt-2">For an accurate result, we need to ensure you are at the correct distance from the screen.</p>
+                            <div class="mt-4 bg-slate-200 rounded-lg h-64 w-full max-w-md mx-auto flex items-center justify-center relative">
+                                <video id="webcam" class="rounded-lg w-full h-full object-cover" autoplay playsinline muted></video>
+                                <p id="webcam-placeholder" class="absolute">Requesting camera access...</p>
+                            </div>
+                            <p id="calibration-message" class="mt-4 text-lg font-medium text-blue-600 h-6"></p>
+                            <button id="start-calibration-btn" class="mt-4 bg-blue-600 text-white font-semibold px-6 py-3 rounded-lg hover:bg-blue-700 transition-all">Start Calibration</button>
+                        </div>
+                        
+                        <!-- Step 2: Acuity Test (Letter Chart) - Hidden by default -->
+                        <div id="acuity-test-step" class="hidden">
+                            <h3 class="text-2xl font-bold">Visual Acuity Test</h3>
+                            <p class="mt-2">Cover your <span id="eye-to-cover" class="font-bold">left</span> eye. Can you see the letter below clearly?</p>
+                            <div id="letter-display" class="my-8 text-center font-serif font-bold transition-all" style="font-size: 120px;">E</div>
+                            <div class="mt-6 flex gap-4 justify-center">
+                                <button id="acuity-yes-btn" class="bg-green-500 hover:bg-green-600 text-white font-semibold py-3 px-8 rounded-lg transition-colors">YES</button>
+                                <button id="acuity-no-btn" class="bg-red-500 hover:bg-red-600 text-white font-semibold py-3 px-8 rounded-lg transition-colors">NO</button>
+                            </div>
+                            <p id="acuity-feedback" class="mt-4 text-lg h-6"></p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+    
+    <!-- Make sure the path to your script.js file is correct -->
+    <script src="script.js"></script>
+</body>
+</html>

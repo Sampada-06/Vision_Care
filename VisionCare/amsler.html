@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Amsler Grid Test</title>
+    <style>
+        /* Simple styling for clarity */
+        body { font-family: sans-serif; text-align: center; }
+        #grid-container { 
+            position: relative; 
+            width: 400px; 
+            height: 400px; 
+            margin: 20px auto; 
+            border: 2px solid #000;
+        }
+        #amslerCanvas { 
+            position: absolute;
+            left: 0;
+            top: 0;
+        }
+        button { padding: 10px 20px; font-size: 16px; margin: 10px; }
+        #results { margin-top: 20px; }
+        #results h3 { color: #d9534f; }
+        #comparisonImage { border: 1px solid #ccc; max-width: 400px; }
+    </style>
+</head>
+<body>
+
+    <h2>Amsler Grid Test</h2>
+    <p>Cover one eye, focus on the central dot, and draw any wavy or missing lines you see.</p>
+
+    <div id="grid-container">
+        <canvas id="amslerCanvas" width="400" height="400"></canvas>
+    </div>
+
+    <button id="saveButton" type="button">Save Test</button>
+<button id="compareButton" type="button">Compare with Last Test</button>
+<button id="clearButton" type="button">Clear Drawing</button>
+
+    <div id="results">
+        <h3 id="message"></h3>
+        <img id="comparisonImage" src="" alt="Comparison Result" style="display:none;" />
+    </div>
+
+    <script src="amsler.js"></script>
+</body>
+</html>
