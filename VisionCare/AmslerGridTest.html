@@ -17,25 +17,11 @@
 <body class="bg-slate-50 text-slate-800 dark:bg-slate-900 dark:text-slate-200">
 
     <div id="app" class="max-w-7xl mx-auto p-4 md:p-8">
-        <!-- <header class="flex justify-between items-center pb-4 border-b border-slate-200 dark:border-slate-800">
-            <div class="flex items-center gap-3">
-                <svg class="w-8 h-8 text-blue-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 010-.639l4.433-7.447A1 1 0 017.48 4h9.04a1 1 0 01.994.883l4.433 7.447a1.012 1.012 0 010 .639l-4.433 7.447A1 1 0 0116.52 20h-9.04a1 1 0 01-.994-.883l-4.433-7.447z" /><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
-                <h1 class="text-2xl font-bold">VisionCare</h1>
-            </div>
-            <nav class="hidden md:flex items-center gap-6">
-                 <a href="#home" class="nav-link text-slate-600 hover:text-blue-600 transition-colors dark:text-slate-400 dark:hover:text-blue-500">Home</a>
-                 <a href="#learn" class="nav-link text-slate-600 hover:text-blue-600 transition-colors dark:text-slate-400 dark:hover:text-blue-500">Learn</a>
-                 <a href="#checker" class="nav-link text-slate-600 hover:text-blue-600 transition-colors dark:text-slate-400 dark:hover:text-blue-500">Symptom Checker</a>
-                 <a href="#history" class="nav-link text-slate-600 hover:text-blue-600 transition-colors dark:text-slate-400 dark:hover:text-blue-500">Test History</a>
-            </nav>
-
-            
-        </header> -->
 
         <div id="app" class="max-w-7xl mx-auto p-4 md:p-8">
         <header class="flex justify-between items-center pb-4 border-b border-slate-200">
  <div class="flex items-center gap-3">
-                <svg class="w-8 h-8 text-blue-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 010-.639l4.433-7.447A1 1 0 017.48 4h9.04a1 1 0 01.994.883l4.433 7.447a1.012 1.012 0 010 .639l-4.433 7.447A1 1 0 0116.52 20h-9.04a1 1 0 01-.994-.883l-4.433-7.447z" /><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
+                <svg class="w-8 h-8 text-blue-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 010-.639l4.433-7.447A1 1 0 017.48 4h9.04a1 1 0 01.994.883l4.433 7.447a1 1 0 010 .639l-4.433 7.447A1 1 0 0116.52 20h-9.04a1 1 0 01-.994-.883l-4.433-7.447z" /><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
                 <h1 class="text-2xl font-bold">VisionCare</h1>
             </div>
             <nav class="hidden md:flex items-center gap-6">
@@ -48,7 +34,8 @@
                     <svg id="theme-icon-dark" xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" /></svg>
                 </button>
                 <a href="test.html" class="bg-blue-600 text-white font-semibold px-5 py-2 rounded-lg hover:bg-blue-700 transition-all shadow-sm">Start New Test</a>
-            </nav>        </header>
+            </nav>        
+        </header>
 
         <main class="mt-12">
             <section id="amsler-test-screen">
@@ -121,37 +108,52 @@
         </main>
     </div>
     
+    <!-- ⭐ SAVE RESULT ONLY (NO IMAGE) -->
     <script>
-        // Start of JavaScript code (amsler.js equivalent)
+    async function saveAmslerResultToBackend(finalResult) {
+        try {
+            const token = localStorage.getItem("token");
+            if (!token) return;
+
+            await fetch("http://localhost:5000/api/history/save", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    token,
+                    testName: "Amsler Grid Test",
+                    result: finalResult
+                })
+            });
+        } catch (err) {
+            console.error("Save error:", err);
+        }
+    }
+    </script>
+
+    <script>
         window.onload = function() {
             const canvas = document.getElementById('amslerCanvas');
             const ctx = canvas.getContext('2d');
             const comparisonCanvas = document.getElementById('comparisonCanvas');
             const comparisonCtx = comparisonCanvas.getContext('2d');
             
-            // Drawing state
             let isDrawing = false;
             let lastX = 0;
             let lastY = 0;
 
-            // Variables to store the last and current drawings (in a real app, these come from the server)
             let lastTestDrawing = null;
             let currentTestDrawing = null;
             
-            // --- Elements ---
             const saveButton = document.getElementById('saveButton');
             const compareButton = document.getElementById('compareButton');
             const clearButton = document.getElementById('clearButton');
             const messageEl = document.getElementById('message');
             const resultLegend = document.getElementById('resultLegend');
 
-            // --- Grid Drawing Function ---
             function drawGrid(context) {
-                // Background
                 context.fillStyle = 'white';
                 context.fillRect(0, 0, canvas.width, canvas.height);
                 
-                // Grid lines (10x10)
                 context.strokeStyle = '#000';
                 context.lineWidth = 1;
                 const step = 30;
@@ -168,18 +170,15 @@
                     context.stroke();
                 }
                 
-                // Center dot
                 context.fillStyle = '#000';
                 context.beginPath();
                 context.arc(canvas.width / 2, canvas.height / 2, 4, 0, Math.PI * 2);
                 context.fill();
                 
-                // Reset drawing style for user
-                ctx.strokeStyle = 'black'; // User draws in BLACK
+                ctx.strokeStyle = 'black';
                 ctx.lineWidth = 3;
             }
             
-            // --- Drawing Handlers ---
             function startDrawing(e) {
                 isDrawing = true;
                 [lastX, lastY] = [e.offsetX, e.offsetY];
@@ -198,7 +197,6 @@
                 isDrawing = false;
             }
 
-            // --- Button Event Listeners ---
             canvas.addEventListener('mousedown', startDrawing);
             canvas.addEventListener('mousemove', draw);
             canvas.addEventListener('mouseup', stopDrawing);
@@ -206,7 +204,7 @@
 
             clearButton.addEventListener('click', () => {
                 drawGrid(ctx);
-                currentTestDrawing = null; // Clear current drawing data
+                currentTestDrawing = null;
                 resultLegend.classList.add('hidden');
                 messageEl.textContent = '';
                 comparisonCanvas.style.display = 'none';
@@ -215,115 +213,109 @@
             saveButton.addEventListener('click', saveTest);
             compareButton.addEventListener('click', compareTests);
 
-            // --- Mock API Functions ---
-
-            // **MOCK DATA SETUP** // Simulate your two inputs (Image 1 and Image 3) as simple drawing functions
             function drawLastTest(context) {
                 context.strokeStyle = 'black';
                 context.lineWidth = 3;
                 context.beginPath();
-                // A straight line just above and below the center dot
                 context.moveTo(canvas.width / 2, 80);
                 context.lineTo(canvas.width / 2, 220);
                 context.stroke();
             }
 
             function saveTest() {
-                // 1. Capture the current drawing from the main canvas
-                currentTestDrawing = canvas.toDataURL('image/png');
+
+                const blankCanvas = document.createElement('canvas');
+                blankCanvas.width = 300;
+                blankCanvas.height = 300;
+                const blankCtx = blankCanvas.getContext('2d');
+                drawGrid(blankCtx);
+
+                const blankData = blankCtx.getImageData(0, 0, 300, 300).data;
+                const currentData = ctx.getImageData(0, 0, 300, 300).data;
+
+                let distortionFound = false;
+
+                for (let i = 0; i < blankData.length; i += 4) {
+                    const isBlank = blankData[i] === currentData[i] &&
+                                    blankData[i + 1] === currentData[i + 1] &&
+                                    blankData[i + 2] === currentData[i + 2];
+
+                    if (!isBlank) {
+                        distortionFound = true;
+                        break;
+                    }
+                }
+
+                const finalResult = distortionFound
+                    ? "Distortion detected by user"
+                    : "No distortion drawn";
+
                 messageEl.textContent = "Test Saved. Ready to Compare.";
 
-                // In a real application, you would send currentTestDrawing to the server here:
-                // await fetch('http://127.0.0.1:5000/save_test', { ... });
+                saveAmslerResultToBackend(finalResult);
             }
 
             async function compareTests() {
-                // Ensure a current drawing exists
-                if (!currentTestDrawing) {
-                    messageEl.textContent = "Please draw your distortion and Save Test first.";
-                    return;
-                }
-
                 messageEl.textContent = "Comparing...";
                 comparisonCanvas.style.display = 'none';
                 resultLegend.classList.add('hidden');
 
-                // 2. Setup a canvas to draw the LAST TEST (Image 1 input)
                 const lastTestCanvas = document.createElement('canvas');
                 lastTestCanvas.width = 300;
                 lastTestCanvas.height = 300;
                 const lastTestCtx = lastTestCanvas.getContext('2d');
-                drawGrid(lastTestCtx); // Draw clean grid
-                drawLastTest(lastTestCtx); // Add the 'straight line' distortion (Image 1)
+                drawGrid(lastTestCtx);
+                drawLastTest(lastTestCtx);
 
-                // 3. Setup a canvas to draw the CURRENT TEST (Image 3 input)
                 const currentTestCanvas = document.createElement('canvas');
                 currentTestCanvas.width = 300;
                 currentTestCanvas.height = 300;
                 const currentTestCtx = currentTestCanvas.getContext('2d');
-                drawGrid(currentTestCtx); // Draw clean grid
-                
-                // Copy the user's current drawing from the main canvas onto the temporary canvas
+                drawGrid(currentTestCtx);
                 currentTestCtx.drawImage(canvas, 0, 0);
 
-                // --- 4. The Corrected Comparison Logic (Typically done on the server) ---
-                
-                // Get pixel data (after the grid is drawn, so the background is white)
                 const lastData = lastTestCtx.getImageData(0, 0, 300, 300).data;
                 const currentData = currentTestCtx.getImageData(0, 0, 300, 300).data;
 
-                // Clear the comparison canvas and redraw a clean grid
                 drawGrid(comparisonCtx);
                 
-                // Get the comparison canvas's data (now a clean grid)
                 const comparisonData = comparisonCtx.getImageData(0, 0, 300, 300);
                 const diffData = comparisonData.data;
 
-                // Iterate over every pixel
                 for (let i = 0; i < lastData.length; i += 4) {
-                    // Check if the pixel is BLACK (R=0, G=0, B=0) or very close (our drawn line)
-                    // We assume the background is white (R=255, G=255, B=255) and lines are black/dark
+
                     const isLastDrawn = lastData[i] < 50 && lastData[i+1] < 50 && lastData[i+2] < 50;
                     const isCurrentDrawn = currentData[i] < 50 && currentData[i+1] < 50 && currentData[i+2] < 50;
 
-                    // Only change the color if there is a distortion (not grid lines or white background)
                     if (isCurrentDrawn || isLastDrawn) {
-                        
-                        // Rule 1: Worsening (New Distortion) - ON in current, OFF in last
+
                         if (isCurrentDrawn && !isLastDrawn) {
-                            diffData[i] = 255;   // R = Red
-                            diffData[i+1] = 0;   // G
-                            diffData[i+2] = 0;   // B
+                            diffData[i] = 255;
+                            diffData[i+1] = 0;
+                            diffData[i+2] = 0;
                         } 
-                        // Rule 2: Improving (Old Distortion Cleared) - OFF in current, ON in last
                         else if (!isCurrentDrawn && isLastDrawn) {
-                            diffData[i] = 0;     // R
-                            diffData[i+1] = 255; // G = Green
-                            diffData[i+2] = 0;   // B
+                            diffData[i] = 0;
+                            diffData[i+1] = 255;
+                            diffData[i+2] = 0;
                         }
-                        // Rule 3: Stable - ON in both
                         else if (isCurrentDrawn && isLastDrawn) {
-                            diffData[i] = 0;     // R
-                            diffData[i+1] = 0;   // G
-                            diffData[i+2] = 0;   // B = Black
+                            diffData[i] = 0;
+                            diffData[i+1] = 0;
+                            diffData[i+2] = 0;
                         }
-                        // The Alpha channel (diffData[i+3]) is kept at 255 (fully opaque)
                     }
                 }
 
-                // 5. Put the colored data back onto the comparison canvas
                 comparisonCtx.putImageData(comparisonData, 0, 0);
 
-                // --- Display Results ---
                 messageEl.textContent = "Comparison Complete: RED areas indicate new changes.";
                 comparisonCanvas.style.display = 'block';
                 resultLegend.classList.remove('hidden');
             }
 
-            // Draw the grid when the page first loads
             drawGrid(ctx);
         };
-        // End of JavaScript code
     </script>
 
 </body>

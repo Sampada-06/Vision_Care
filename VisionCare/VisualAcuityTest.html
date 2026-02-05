@@ -8,15 +8,62 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <!-- Make sure the path to your style.css file is correct -->
-    <link rel="stylesheet" href="style.css"> 
-    
-    <!-- TensorFlow.js scripts for camera calibration -->
-    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs-core"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs-converter"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs-backend-webgl"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/face-detection"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
+    <style>
+        /* --- Custom Properties for Dynamic Theming --- */
+        :root {
+            --gradient-primary: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --glass-bg: rgba(255, 255, 255, 0.1);
+            --glass-border: rgba(255, 255, 255, 0.2);
+            --shadow-glow: 0 8px 32px rgba(31, 38, 135, 0.37);
+            --shadow-intense: 0 25px 50px rgba(0, 0, 0, 0.25);
+            --neon-blue: #00d4ff;
+        }
+
+        .dark {
+            --gradient-primary: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            --glass-bg: rgba(0, 0, 0, 0.3);
+            --glass-border: rgba(255, 255, 255, 0.1);
+            --shadow-glow: 0 8px 32px rgba(0, 0, 0, 0.5);
+        }
+
+        /* --- Base & Typography --- */
+        body {
+            font-family: 'Poppins', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background: var(--gradient-primary);
+            background-attachment: fixed;
+            color: #ffffff;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+        }
+        
+        /* Simplified Background Animations/Effects */
+        body::before { content: ''; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: radial-gradient(circle at 20% 50%, rgba(120, 119, 198, 0.3) 0%, transparent 50%); animation: backgroundFloat 20s ease-in-out infinite; z-index: -2; }
+        body::after { content: ''; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grain" width="100" height="100" patternUnits="userSpaceOnUse"><circle cx="50" cy="50" r="0.5" fill="rgba(255,255,255,0.05)"/></pattern></defs><rect width="100" height="100" fill="url(%23grain)"/></svg>'); z-index: -1; opacity: 0.6; }
+
+        @keyframes backgroundFloat {
+            0%, 100% { transform: translate(0px, 0px); }
+            50% { transform: translate(30px, -30px); }
+        }
+        @keyframes fadeInUp { from { opacity: 0; transform: translateY(40px) scale(0.95); filter: blur(5px); } to { opacity: 1; transform: translateY(0) scale(1); filter: blur(0); } }
+
+        .fade-in { animation: fadeInUp 0.8s cubic-bezier(0.165, 0.84, 0.44, 1) forwards; }
+
+        /* Glassmorphism Styles */
+        header { background: var(--glass-bg); backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px); border: 1px solid var(--glass-border); box-shadow: var(--shadow-glow); }
+        .bg-white { background: var(--glass-bg); backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px); border: 1px solid var(--glass-border); box-shadow: var(--shadow-glow); }
+        .bg-white:hover { transform: translateY(-8px) scale(1.02); box-shadow: var(--shadow-intense); }
+        
+        /* Typography */
+        h1, h2, h3 { background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); background-clip: text; -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-weight: 700; }
+
+        .dark header, .dark .bg-white { background: rgba(0, 0, 0, 0.4); border-color: rgba(255, 255, 255, 0.1); }
+        .dark h3 { -webkit-text-fill-color: white; text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5); }
+        
+        .test-page-main { min-height: calc(100vh - 150px); }
+
+    </style>
 </head>
 <body class="bg-slate-50 text-slate-800">
 
@@ -29,22 +76,31 @@
         </div>
     </div>
 
-    <div id="app" class="max-w-7xl mx-auto p-4 md:p-8">
-        <header class="flex justify-between items-center pb-4 border-b border-slate-200">
+    <!-- <div id="app" class="max-w-7xl mx-auto p-4 md:p-8">
+        <header class="flex justify-between items-center pb-4 border-b border-slate-200 rounded-2xl">
             <div class="flex items-center gap-3">
-                 <svg class="w-8 h-8 text-blue-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 010-.639l4.433-7.447A1 1 0 017.48 4h9.04a1 1 0 01.994.883l4.433 7.447a1.012 1.012 0 010 .639l-4.433 7.447A1 1 0 0116.52 20h-9.04a1 1 0 01-.994-.883l-4.433-7.447z" /><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
+                <svg class="w-8 h-8 text-blue-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 010-.639l4.433-7.447A1 1 0 017.48 4h9.04a1 1 0 01.994.883l4.433 7.447a1.012 1.012 0 010 .639l-4.433 7.447A1 1 0 0116.52 20h-9.04a1 1 0 01-.994-.883l-4.433-7.447z" /><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
                 <h1 class="text-2xl font-bold">VisionCare</h1>
             </div>
-             <nav class="hidden md:flex items-center gap-6">
-                <!-- Update nav links to point to the correct pages -->
-                <a href="index.html" class="nav-link text-slate-600 hover:text-blue-600 transition-colors">Home</a>
-                <a href="learn.html" class="nav-link text-slate-600 hover:text-blue-600 transition-colors">Learn</a>
-                <a href="symptom-checker.html" class="nav-link text-slate-600 hover:text-blue-600 transition-colors">Symptom Checker</a>
-                <a href="history.html" class="nav-link text-slate-600 hover:text-blue-600 transition-colors">Test History</a>
-                <button id="dark-mode-toggle" class="p-2 rounded-full hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors">
-                    <svg id="theme-icon-light" xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" /></svg>
-                    <svg id="theme-icon-dark" xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" /></svg>
-                </button>
+            
+            <nav class="hidden md:flex items-center gap-6">
+               <a href="index.html" class="nav-link text-slate-600 hover:text-blue-600 transition-colors">Home</a>
+               <a href="test.html" class="bg-blue-600 text-white font-semibold px-5 py-2 rounded-lg hover:bg-blue-700 transition-all shadow-sm">Start New Test</a>
+            </nav>
+        </header> -->
+
+        <div id="app" class="max-w-7xl mx-auto p-4 md:p-8">
+        <header class="flex justify-between items-center pb-4 border-b border-slate-200 dark:border-slate-800">
+            <div class="flex items-center gap-3">
+                <svg class="w-8 h-8 text-blue-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 010-.639l4.433-7.447A1 1 0 017.48 4h9.04a1 1 0 01.994.883l4.433 7.447a1.012 1.012 0 010 .639l-4.433 7.447A1 1 0 0116.52 20h-9.04a1 1 0 01-.994-.883l-4.433-7.447z" /><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
+                <h1 class="text-2xl font-bold">VisionCare</h1>
+            </div>
+            <nav class="hidden md:flex items-center gap-6">
+                <a href="index.html" class="nav-link text-slate-600 hover:text-blue-600 transition-colors dark:text-slate-400 dark:hover:text-blue-500">Home</a>
+                <a href="learn.html" class="nav-link text-slate-600 hover:text-blue-600 transition-colors dark:text-slate-400 dark:hover:text-blue-500">Learn</a>
+                <a href="symptom-checker.html" class="nav-link text-slate-600 hover:text-blue-600 transition-colors dark:text-slate-400 dark:hover:text-blue-500">Symptom Checker</a>
+                <a href="history.html" class="nav-link text-slate-600 hover:text-blue-600 transition-colors dark:text-slate-400 dark:hover:text-blue-500">Test History</a>
+                
             </nav>
         </header>
 
@@ -63,36 +119,475 @@
                     </div>
                     
                     <div id="test-content" class="text-center">
-                        <!-- Step 1: Calibration -->
                         <div id="calibration-step">
                             <h3 class="text-2xl font-bold">Screen Calibration</h3>
-                            <p class="mt-2">For an accurate result, we need to ensure you are at the correct distance from the screen.</p>
+                            <p class="mt-2 text-slate-400">For an accurate result, we need to ensure you are at the correct distance from the screen.</p>
                             <div class="mt-4 bg-slate-200 rounded-lg h-64 w-full max-w-md mx-auto flex items-center justify-center relative">
-                                <video id="webcam" class="rounded-lg w-full h-full object-cover" autoplay playsinline muted></video>
-                                <p id="webcam-placeholder" class="absolute">Requesting camera access...</p>
+                                <div class="text-slate-500">Camera Active</div>
                             </div>
-                            <p id="calibration-message" class="mt-4 text-lg font-medium text-blue-600 h-6"></p>
+                            <p id="calibration-message" class="mt-4 text-lg font-medium text-blue-600 h-6">Waiting for user input...</p>
                             <button id="start-calibration-btn" class="mt-4 bg-blue-600 text-white font-semibold px-6 py-3 rounded-lg hover:bg-blue-700 transition-all">Start Calibration</button>
                         </div>
                         
-                        <!-- Step 2: Acuity Test (Letter Chart) - Hidden by default -->
                         <div id="acuity-test-step" class="hidden">
                             <h3 class="text-2xl font-bold">Visual Acuity Test</h3>
-                            <p class="mt-2">Cover your <span id="eye-to-cover" class="font-bold">left</span> eye. Can you see the letter below clearly?</p>
-                            <div id="letter-display" class="my-8 text-center font-serif font-bold transition-all" style="font-size: 120px;">E</div>
-                            <div class="mt-6 flex gap-4 justify-center">
-                                <button id="acuity-yes-btn" class="bg-green-500 hover:bg-green-600 text-white font-semibold py-3 px-8 rounded-lg transition-colors">YES</button>
-                                <button id="acuity-no-btn" class="bg-red-500 hover:bg-red-600 text-white font-semibold py-3 px-8 rounded-lg transition-colors">NO</button>
+                            <p class="mt-2 text-slate-400">
+                                Cover your <span id="eye-to-cover" class="font-bold text-blue-600">left</span> eye. Read the 3 letters you see below.
+                            </p>
+        
+                            <div id="letter-display-container" class="my-8 text-center min-h-[150px] flex items-center justify-center">
+                                <p id="acuity-loading-text" class="text-xl text-slate-500">Generating test...</p>
                             </div>
-                            <p id="acuity-feedback" class="mt-4 text-lg h-6"></p>
+        
+                            <div class="mt-6 max-w-sm mx-auto">
+                                <label for="user-input" class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+                                    Enter the 3 letters (e.g., TRZ):
+                                </label>
+                                <input type="text" id="user-input" maxlength="3" 
+                                    class="w-full text-center text-2xl uppercase tracking-widest 
+                                    border-2 border-slate-300 dark:border-slate-600 
+                                    rounded-lg p-3 focus:ring-blue-500 focus:border-blue-500 
+                                    transition-colors dark:bg-slate-700 dark:text-white" 
+                                    placeholder="___" autofocus>
+                                
+                                <button id="submit-letters-btn" 
+                                    class="mt-4 w-full bg-blue-600 text-white font-semibold py-3 rounded-lg 
+                                    hover:bg-blue-700 transition-all disabled:bg-blue-300 disabled:opacity-70" disabled>
+                                    Submit
+                                </button>
+                            </div>
+                            
+                            <p id="acuity-feedback" class="mt-4 text-sm font-medium h-6"></p>
+                            <p id="current-va-level" class="mt-2 text-xs text-slate-500 dark:text-slate-400">Current VA Level: 20/XX</p>
+        
                         </div>
+                        
+                        <div id="results-step" class="hidden text-left">
+                            <h3 class="text-3xl font-bold text-blue-600">Test Complete!</h3>
+                            <p class="mt-2 text-xl text-slate-400">Here are your preliminary visual acuity results:</p>
+                            
+                            <div class="mt-6 grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div class="bg-blue-50 dark:bg-slate-700 p-6 rounded-xl border border-blue-200 dark:border-slate-600">
+                                    <p class="text-sm uppercase font-semibold text-blue-600 dark:text-blue-400">Right Eye Acuity (OD)</p>
+                                    <p id="result-od" class="text-4xl font-extrabold mt-1 text-blue-800 dark:text-white">N/A</p>
+                                </div>
+                                <div class="bg-blue-50 dark:bg-slate-700 p-6 rounded-xl border border-blue-200 dark:border-slate-600">
+                                    <p class="text-sm uppercase font-semibold text-blue-600 dark:text-blue-400">Left Eye Acuity (OS)</p>
+                                    <p id="result-os" class="text-4xl font-extrabold mt-1 text-blue-800 dark:text-white">N/A</p>
+                                </div>
+                            </div>
+
+                            <div class="mt-6 bg-white dark:bg-slate-800 p-6 rounded-xl border border-slate-200 dark:border-slate-600 shadow-sm">
+                                <h4 class="text-lg font-bold text-slate-700 dark:text-slate-200">Vision Health Probability</h4>
+                                <div class="mt-4">
+                                    <div class="flex justify-between mb-1">
+                                        <span class="text-base font-medium text-slate-700 dark:text-slate-300">Likelihood of Visual Impairment</span>
+                                        <span id="risk-percentage" class="text-lg font-bold text-blue-600">0%</span>
+                                    </div>
+                                    <div class="w-full bg-slate-200 rounded-full h-4 dark:bg-slate-700 overflow-hidden">
+                                        <div id="risk-bar" class="bg-blue-600 h-4 rounded-full transition-all duration-1000 ease-out" style="width: 0%"></div>
+                                    </div>
+                                    <p id="risk-description" class="mt-3 text-sm text-slate-500 dark:text-slate-400">
+                                        Analysis pending...
+                                    </p>
+                                </div>
+                            </div>
+        
+                            <div class="mt-8 p-4 bg-yellow-50 border-l-4 border-yellow-500 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200">
+                                <p class="font-bold">Disclaimer:</p>
+                                <p class="text-sm">This is a preliminary screening tool. It is not a substitute for a comprehensive eye exam by a qualified professional.</p>
+                            </div>
+        
+                            <button id="new-test-btn" class="mt-6 bg-green-600 text-white font-semibold px-6 py-3 rounded-lg hover:bg-green-700 transition-all">Start New Test</button>
+                        </div>
+                        
                     </div>
                 </div>
             </section>
         </main>
     </div>
     
-    <!-- Make sure the path to your script.js file is correct -->
-    <script src="script.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+
+            // --- PRELOADER & PAGE TRANSITION LOGIC ---
+            const preloader = document.getElementById('preloader');
+            window.addEventListener('load', () => {
+                if (preloader) {
+                    setTimeout(() => { preloader.classList.add('hidden'); }, 500);
+                }
+            });
+
+            // --- GLOBAL CONFIGURATION AND STATE ---
+            const VA_LEVELS = [200, 100, 80, 63, 50, 40, 32, 25, 20, 16, 12]; 
+            const SNELLEN_LETTERS = ['A', 'C', 'D', 'E', 'F', 'H', 'K', 'N', 'P', 'R', 'T', 'V', 'Z'];
+            const LETTERS_PER_BLOCK = 3; 
+            const CORRECT_TO_ADVANCE = 2; 
+            const IDEAL_PIXEL_PER_CM = 37.795; 
+
+            let adaptiveState = {
+                eye: 'right', 
+                currentVAIndex: 6, 
+                turnarounds: 0,
+                bestVAIndex: 6, 
+                targetLetters: [],
+                viewingDistanceMM: 400, 
+                results: { od: null, os: null }
+            };
+
+            // --- DOM ELEMENTS ---
+            const elements = {
+                calibrationStep: document.getElementById('calibration-step'),
+                acuityTestStep: document.getElementById('acuity-test-step'),
+                resultsStep: document.getElementById('results-step'),
+                letterDisplayContainer: document.getElementById('letter-display-container'),
+                userInput: document.getElementById('user-input'),
+                submitBtn: document.getElementById('submit-letters-btn'),
+                eyeToCover: document.getElementById('eye-to-cover'),
+                acuityFeedback: document.getElementById('acuity-feedback'),
+                currentVALevel: document.getElementById('current-va-level'),
+                resultOD: document.getElementById('result-od'),
+                resultOS: document.getElementById('result-os'),
+                progressBar: document.getElementById('progress-bar'),
+                progressText: document.getElementById('progress-text'),
+                startCalibrationBtn: document.getElementById('start-calibration-btn'),
+                calibrationMessage: document.getElementById('calibration-message'),
+                // New elements for Risk calculation
+                riskPercentage: document.getElementById('risk-percentage'),
+                riskBar: document.getElementById('risk-bar'),
+                riskDescription: document.getElementById('risk-description'),
+            };
+
+            // --- UTILITY FUNCTIONS ---
+
+            function updateProgress(percentage, text) {
+                elements.progressBar.style.width = `${percentage}%`;
+                elements.progressText.textContent = text;
+            }
+
+            function calculateLetterSize(va_denominator) {
+                const dist = (!adaptiveState.viewingDistanceMM || isNaN(adaptiveState.viewingDistanceMM)) 
+                             ? 400 : adaptiveState.viewingDistanceMM;
+                const H_mm = (va_denominator * dist) / 6000;
+                const PPI = IDEAL_PIXEL_PER_CM * 2.54; 
+                const pixelHeight = H_mm * (PPI / 25.4); 
+                return Math.round(Math.max(10, pixelHeight)); 
+            }
+
+            // --- RISK CALCULATION LOGIC (New Feature) ---
+            function calculateEyeHealthProbability(denomRight, denomLeft) {
+                // We base the probability on the WORSE eye (highest denominator)
+                const maxDenom = Math.max(denomRight, denomLeft);
+                
+                let probability = 0;
+                let colorClass = "bg-green-500";
+                let textClass = "text-green-600";
+                let description = "";
+
+                if (maxDenom <= 20) {
+                    probability = 5; // 5% chance (Normal)
+                    description = "Your vision appears normal. Routine checkups are still recommended.";
+                } else if (maxDenom <= 25) {
+                    probability = 25; // Mild
+                    colorClass = "bg-yellow-400";
+                    textClass = "text-yellow-600";
+                    description = "You may have very mild vision loss. Monitoring recommended.";
+                } else if (maxDenom <= 40) {
+                    probability = 55; // Moderate
+                    colorClass = "bg-orange-500";
+                    textClass = "text-orange-600";
+                    description = "Moderate probability of refractive error. You likely need glasses for driving or distance.";
+                } else if (maxDenom <= 70) {
+                    probability = 80; // High
+                    colorClass = "bg-red-500";
+                    textClass = "text-red-600";
+                    description = "High probability of vision issues. An appointment with an optometrist is strongly advised.";
+                } else {
+                    probability = 95; // Very High
+                    colorClass = "bg-red-700";
+                    textClass = "text-red-800";
+                    description = "Very high probability of significant vision impairment. Please see a doctor immediately.";
+                }
+
+                return { probability, colorClass, textClass, description };
+            }
+
+            // --- ADAPTIVE ACUITY LOGIC ---
+
+            function generateTestBlock() {
+                const vaDenom = VA_LEVELS[adaptiveState.currentVAIndex];
+                const letterSizePx = calculateLetterSize(vaDenom);
+                
+                adaptiveState.targetLetters = [];
+                for (let i = 0; i < LETTERS_PER_BLOCK; i++) {
+                    const randomIndex = Math.floor(Math.random() * SNELLEN_LETTERS.length);
+                    adaptiveState.targetLetters.push(SNELLEN_LETTERS[randomIndex]);
+                }
+                
+                let html = '';
+                const FLANKER = '|'; 
+                
+                adaptiveState.targetLetters.forEach(letter => {
+                    const jitterY = Math.floor(Math.random() * 10) - 5; 
+                    
+                    html += `
+                        <div style="display: inline-flex; align-items: center; margin: 0 8px; transform: translateY(${jitterY}px);">
+                            <span class="crowding-flanker text-slate-400 font-bold" style="font-size: ${letterSizePx / 3}px;">${FLANKER}</span>
+                            <span class="optotype font-sans font-extrabold text-slate-900 dark:text-white leading-none inline-block align-middle" 
+                                style="font-size: ${letterSizePx}px; height: ${letterSizePx}px; line-height: ${letterSizePx}px; margin: 0 5px;">
+                                ${letter}
+                            </span>
+                            <span class="crowding-flanker text-slate-400 font-bold" style="font-size: ${letterSizePx / 3}px;">${FLANKER}</span>
+                        </div>
+                    `;
+                });
+                
+                elements.letterDisplayContainer.innerHTML = html;
+                elements.currentVALevel.textContent = `Current VA Level: 20/${vaDenom}`;
+                
+                elements.userInput.value = '';
+                elements.userInput.focus();
+                elements.submitBtn.disabled = true;
+            }
+
+            function processUserAttempt() {
+                const userInput = elements.userInput.value.toUpperCase().substring(0, LETTERS_PER_BLOCK);
+                const target = adaptiveState.targetLetters.join('');
+
+                if (userInput.length !== LETTERS_PER_BLOCK) {
+                    elements.acuityFeedback.textContent = 'Please enter all 3 letters.';
+                    return;
+                }
+
+                elements.acuityFeedback.textContent = '';
+                
+                let correctCount = 0;
+                for (let i = 0; i < LETTERS_PER_BLOCK; i++) {
+                    if (userInput[i] === target[i]) {
+                        correctCount++;
+                    }
+                }
+
+                const passed = correctCount >= CORRECT_TO_ADVANCE; 
+                let oldVAIndex = adaptiveState.currentVAIndex;
+                let newVAIndex = adaptiveState.currentVAIndex;
+
+                if (passed) {
+                    newVAIndex = Math.min(VA_LEVELS.length - 1, adaptiveState.currentVAIndex + 1);
+                    adaptiveState.bestVAIndex = oldVAIndex; 
+                    elements.acuityFeedback.textContent = `Correct: ${correctCount}/3. Decreasing size.`;
+                    elements.acuityFeedback.className = "mt-4 text-sm font-medium h-6 text-green-600";
+                } else {
+                    newVAIndex = Math.max(0, adaptiveState.currentVAIndex - 1);
+                    elements.acuityFeedback.textContent = `Correct: ${correctCount}/3. Increasing size.`;
+                    elements.acuityFeedback.className = "mt-4 text-sm font-medium h-6 text-red-500";
+                }
+
+                if (oldVAIndex !== newVAIndex) {
+                    if ((oldVAIndex < newVAIndex && !passed) || (oldVAIndex > newVAIndex && passed)) {
+                        adaptiveState.turnarounds++;
+                    }
+                }
+
+                adaptiveState.currentVAIndex = newVAIndex;
+                
+                if (adaptiveState.turnarounds >= 3 || newVAIndex === 0 || newVAIndex === VA_LEVELS.length - 1) {
+                    finishEyeTest();
+                } else {
+                    setTimeout(generateTestBlock, 1000); 
+                }
+            }
+
+            function finishEyeTest() {
+                const finalVA = `20/${VA_LEVELS[adaptiveState.bestVAIndex]}`;
+                
+                if (adaptiveState.eye === 'right') {
+                    adaptiveState.results.od = finalVA;
+                    updateProgress(55, 'Step 2 of 2: Visual Acuity (Left Eye)');
+                    startLeftEyeTest();
+                } else {
+                    adaptiveState.results.os = finalVA;
+                    updateProgress(100, 'Test Complete');
+                    showResults();
+                }
+            }
+
+            function startLeftEyeTest() {
+                adaptiveState.eye = 'left';
+                adaptiveState.currentVAIndex = 6; 
+                adaptiveState.turnarounds = 0;
+                adaptiveState.bestVAIndex = 6;
+                
+                elements.eyeToCover.textContent = 'right';
+                elements.acuityFeedback.textContent = 'Starting left eye test. Please cover your right eye now.';
+                
+                setTimeout(generateTestBlock, 2000);
+            }
+
+            function showResults() {
+    elements.acuityTestStep.classList.add('hidden');
+    elements.resultsStep.classList.remove('hidden');
+    
+    const resOD = adaptiveState.results.od || '20/20';
+    const resOS = adaptiveState.results.os || '20/20';
+
+    elements.resultOD.textContent = resOD;
+    elements.resultOS.textContent = resOS;
+
+    // Parse denominators
+    const denomOD = parseInt(resOD.split('/')[1]);
+    const denomOS = parseInt(resOS.split('/')[1]);
+
+    const healthData = calculateEyeHealthProbability(denomOD, denomOS);
+
+    // UI update for risk
+    elements.riskPercentage.textContent = `${healthData.probability}%`;
+    elements.riskPercentage.className = `text-lg font-bold ${healthData.textClass}`;
+    elements.riskBar.className = `h-4 rounded-full transition-all duration-1000 ease-out ${healthData.colorClass}`;
+
+    setTimeout(() => {
+        elements.riskBar.style.width = `${healthData.probability}%`;
+    }, 100);
+
+    elements.riskDescription.textContent = healthData.description;
+
+    // ----- FULL RESULT OBJECT -----
+    const fullResult = {
+        rightEye: resOD,
+        leftEye: resOS,
+        riskPercentage: healthData.probability,
+        riskDescription: healthData.description,
+        viewingDistanceMM: adaptiveState.viewingDistanceMM,
+        timestamp: new Date().toISOString()
+    };
+
+    // ----- AUTO SAVE TO BACKEND -----
+    saveHistoryAuto("Visual Acuity Test", JSON.stringify(fullResult));
+
+}
+async function saveHistoryAuto(testName, resultObj) {
+    try {
+        const token = localStorage.getItem('token');
+        if (!token) {
+            console.warn("No token found — user not logged in.");
+            return;
+        }
+
+        const res = await fetch("http://localhost:5000/api/history/save", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                token,
+                testName,
+                result: resultObj
+            })
+        });
+
+        const data = await res.json();
+        console.log("Saved to backend:", data);
+
+    } catch (err) {
+        console.error("History save error:", err);
+    }
+}
+
+
+            function runAcuityTest() {
+                console.log("Starting Acuity Test...");
+                
+                if (!adaptiveState.viewingDistanceMM) {
+                    console.log("No distance set, defaulting to 400mm");
+                    adaptiveState.viewingDistanceMM = 400; 
+                }
+
+                elements.calibrationStep.style.display = 'none'; 
+                elements.acuityTestStep.classList.remove('hidden');
+                elements.acuityTestStep.style.display = 'block';
+                
+                elements.userInput.oninput = () => {
+                    elements.submitBtn.disabled = elements.userInput.value.length < LETTERS_PER_BLOCK;
+                };
+                
+                elements.submitBtn.onclick = processUserAttempt;
+                
+                elements.userInput.onkeyup = (event) => {
+                    if (event.key === 'Enter' && elements.userInput.value.length === LETTERS_PER_BLOCK) {
+                        processUserAttempt();
+                    }
+                };
+
+                updateProgress(5, 'Step 1 of 2: Visual Acuity (Right Eye)');
+                generateTestBlock(); 
+            }
+
+            // --- CALIBRATION LOGIC (FIXED) ---
+
+            const startCalibration = async () => {
+                const calibBtn = elements.startCalibrationBtn;
+                const messageEl = elements.calibrationMessage;
+
+                calibBtn.disabled = true;
+                calibBtn.textContent = 'Connecting...';
+                
+                try {
+                    const socket = new WebSocket('ws://localhost:8765');
+                    
+                    socket.onopen = () => {
+                        messageEl.textContent = 'Connected! Enter screen size:';
+                        
+                        let screenSize = prompt("Please enter your screen size in inches (e.g., 15.6):", "15.6");
+                        if (screenSize) {
+                            socket.send(screenSize);
+                            messageEl.textContent = 'Follow instructions in the Python window...';
+                            calibBtn.textContent = 'Calibrating...';
+                        } else {
+                            socket.close();
+                            messageEl.textContent = 'Calibration skipped. Using default.';
+                            calibBtn.textContent = 'Start Test Anyway';
+                            calibBtn.disabled = false;
+                            calibBtn.onclick = runAcuityTest;
+                        }
+                    };
+
+                    socket.onmessage = (event) => {
+                        const cleanData = event.data.trim();
+                        const parts = cleanData.split('|');
+                        const status = parts[0].trim();
+                        
+                        if (status === 'CALIBRATION_OK') {
+                            const dist = parts.length > 1 ? parseFloat(parts[1]) : 400;
+                            adaptiveState.viewingDistanceMM = dist;
+                            
+                            messageEl.textContent = `Distance: ${dist}mm. Starting...`;
+                            messageEl.className = "mt-4 text-lg font-medium text-green-600 h-6";
+                            
+                            socket.close();
+                            setTimeout(runAcuityTest, 1500);
+                        } else {
+                            messageEl.textContent = cleanData;
+                        }
+                    };
+
+                    socket.onerror = (error) => {
+                        console.error("WebSocket Error:", error);
+                        messageEl.textContent = 'Connection Error! Is Python running?';
+                        calibBtn.disabled = false;
+                        calibBtn.textContent = 'Skip Calibration';
+                        calibBtn.onclick = runAcuityTest;
+                    };
+                } catch (e) {
+                    console.error("Setup Error:", e);
+                    calibBtn.disabled = false;
+                }
+            };
+            
+            elements.startCalibrationBtn.addEventListener('click', startCalibration);
+            
+            document.getElementById('new-test-btn').addEventListener('click', () => {
+                window.location.reload(); 
+            });
+
+        });
+    </script>
 </body>
 </html>
