@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>VisionCare — Login / Signup</title>
+
+  <!-- Your main site CSS (contains your variables & animations) -->
+  <link rel="stylesheet" href="style.css">
+
+  <!-- small inline styles specific to auth page -->
+  <style>
+    /* Page layout */
+    body {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 40px;
+      background: var(--gradient-primary);
+      font-family: 'Poppins', Inter, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+    }
+ 
+    /* soft overlay to make card pop */
+    .auth-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.06);
+      pointer-events: none;
+      z-index: -1;
+      backdrop-filter: blur(6px);
+    }
+
+    /* Glass card (soft blur) */
+    .auth-card {
+      width: 420px;
+      max-width: 92%;
+      border-radius: 20px;
+      padding: 36px;
+      background: var(--glass-bg);
+      border: 1px solid var(--glass-border);
+      box-shadow: var(--shadow-glow);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      animation: fadeInUp 0.6s ease both;
+    }
+
+    /* Title */
+    .auth-title {
+      margin: 0 0 14px 0;
+      font-size: 28px;
+      font-weight: 700;
+      text-align: center;
+      background: var(--gradient-accent);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+
+    .auth-sub {
+      text-align: center;
+      margin-bottom: 20px;
+      color: rgba(255,255,255,0.85);
+      font-weight: 500;
+    }
+
+    /* Inputs */
+    .auth-input {
+      width: 100%;
+      padding: 12px 14px;
+      border-radius: 12px;
+      border: 2px solid var(--glass-border);
+      background: transparent;
+      color: inherit;
+      margin-bottom: 12px;
+      outline: none;
+      transition: all 0.22s ease;
+    }
+    .auth-input:focus {
+      border-color: var(--neon-blue);
+      box-shadow: 0 0 18px rgba(0,212,255,0.12);
+      transform: translateY(-2px);
+    }
+
+    .auth-actions { margin-top: 8px; }
+
+    .btn-primary {
+      width: 100%;
+      padding: 12px;
+      border-radius: 12px;
+      border: none;
+      cursor: pointer;
+      font-weight: 700;
+      color: white;
+      background: var(--gradient-secondary);
+      transition: all .22s ease;
+    }
+    .btn-primary:hover { transform: translateY(-3px); box-shadow: var(--shadow-intense); }
+
+    .btn-google {
+      width: 100%;
+      margin-top: 10px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      gap:10px;
+      padding:10px;
+      border-radius:12px;
+      background: #fff;
+      color: #000;
+      border:1px solid rgba(0,0,0,0.06);
+      cursor:pointer;
+    }
+
+    .small-link { text-align:center; margin-top:12px; color: rgba(255,255,255,0.8); }
+    .small-link a { color: var(--neon-blue); text-decoration:none; font-weight:600; }
+
+    /* password eye */
+    .pw-wrap { position: relative; }
+    .pw-eye {
+      position: absolute; right:12px; top:10px; cursor:pointer; font-size:18px;
+    }
+
+    /* Error styles (neon) */
+    .error-message {
+      display:block;
+      background: transparent;
+      color: #ff7b88;
+      font-weight:700;
+      text-align:center;
+      margin-bottom:10px;
+      padding: 4px 6px;
+      border-radius:8px;
+      opacity:1;
+      transition: all .25s ease;
+    }
+    .hidden { display:none !important; }
+
+    .input-error {
+      border-color: #ff0033 !important;
+      box-shadow: 0 0 18px rgba(255,0,51,0.18);
+      animation: shake 0.36s ease;
+    }
+
+    @keyframes shake {
+      0% { transform: translateX(0); }
+      25% { transform: translateX(-6px); }
+      50% { transform: translateX(6px); }
+      75% { transform: translateX(-4px); }
+      100% { transform: translateX(0); }
+    }
+
+    /* minimal navbar (top) */
+    .minimal-nav {
+      width: 100%;
+      position: absolute;
+      top: 28px;
+      left: 0;
+      text-align: center;
+    }
+    .site-logo {
+      display:inline-block;
+      padding:10px 18px;
+      border-radius: 14px;
+      font-weight:800;
+      color: transparent;
+      background: var(--gradient-accent);
+      -webkit-background-clip: text;
+      background-clip:text;
+      font-size:20px;
+    }
+
+    @media (max-width:480px) {
+      .auth-card { padding: 24px; border-radius: 14px; }
+      .auth-title { font-size: 22px; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="auth-backdrop" aria-hidden="true"></div>
+
+  <!-- Minimal Navbar -->
+  <div class="minimal-nav">
+    <span class="site-logo">VisionCare</span>
+  </div>
+
+  <!-- Authentication Card -->
+  <div class="auth-card" role="main" aria-labelledby="auth-title">
+
+    <!-- Title -->
+    <h1 id="auth-title" class="auth-title">Welcome to VisionCare</h1>
+    <div class="auth-sub">Secure login for your eye health data</div>
+
+    <!-- LOGIN FORM -->
+    <div id="loginForm" aria-hidden="false">
+      <!-- REQUIRED: login error box (must exist) -->
+      <div id="loginError" class="error-message hidden" role="alert"></div>
+
+      <label class="sr-only" for="loginEmail">Email</label>
+      <input id="loginEmail" class="auth-input" type="email" placeholder="Email" autocomplete="email" />
+
+      <div class="pw-wrap" style="margin-bottom:6px;">
+        <label class="sr-only" for="loginPassword">Password</label>
+        <input id="loginPassword" class="auth-input" type="password" placeholder="Password" autocomplete="current-password" />
+        <span class="pw-eye" onclick="togglePassword('loginPassword', this)">👁</span>
+      </div>
+
+      <div class="auth-actions">
+        <button id="loginBtn" class="btn-primary" type="button">Login</button>
+      </div>
+
+      <button id="googleLoginBtn" class="btn-google" type="button" aria-label="Login with Google">
+        <img src="https://developers.google.com/identity/images/g-logo.png" alt="" width="20" /> Login with Google
+      </button>
+
+      <div class="small-link">
+        Don't have an account? <a id="toSignup" href="#" onclick="return false;">Create one</a>
+      </div>
+    </div>
+
+    <!-- SIGNUP FORM (hidden by default) -->
+    <div id="signupForm" class="hidden" aria-hidden="true" style="margin-top:6px;">
+      <!-- REQUIRED: signup error box -->
+      <div id="signupError" class="error-message hidden" role="alert"></div>
+
+      <input id="fullname" class="auth-input" type="text" placeholder="Full name" autocomplete="name" />
+      <input id="email" class="auth-input" type="email" placeholder="Email" autocomplete="email" />
+      <input id="mobile" class="auth-input" type="tel" placeholder="Mobile number" maxlength="12" />
+      <input id="age" class="auth-input" type="number" placeholder="Age" min="1" />
+
+      <select id="bloodgroup" class="auth-input" aria-label="Blood group">
+        <option value="">Select Blood Group</option>
+        <option>A+</option><option>A−</option><option>B+</option><option>B−</option>
+        <option>O+</option><option>O−</option><option>AB+</option><option>AB−</option>
+      </select>
+
+      <input id="profession" class="auth-input" type="text" placeholder="Profession" />
+
+      <div class="pw-wrap">
+        <input id="password" class="auth-input" type="password" placeholder="Password" />
+        <span class="pw-eye" onclick="togglePassword('password', this)">👁</span>
+      </div>
+      <div class="pw-wrap">
+        <input id="confirmpassword" class="auth-input" type="password" placeholder="Confirm password" />
+        <span class="pw-eye" onclick="togglePassword('confirmpassword', this)">👁</span>
+      </div>
+
+      <div class="auth-actions">
+        <button id="signupBtn" class="btn-primary" type="button">Create account</button>
+      </div>
+
+      <div class="small-link">
+        Already have an account? <a id="toLogin" href="#" onclick="return false;">Login</a>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- SCRIPT: robust auth logic (connects to your backend) -->
+  <script>
+  (function(){
+    const API = "http://localhost:5000/api/auth";
+
+    // shorthand
+    const $ = id => document.getElementById(id);
+
+    /* Toggle Password visibility */
+    window.togglePassword = function(id, icon) {
+      const el = $(id);
+      if (!el) return;
+      el.type = el.type === "password" ? "text" : "password";
+      icon.textContent = el.type === "password" ? "👁" : "🙈";
+    };
+
+    /* Switch forms */
+    function showSignup() {
+      $('loginForm').classList.add('hidden');
+      $('signupForm').classList.remove('hidden');
+      $('loginForm').setAttribute('aria-hidden','true');
+      $('signupForm').setAttribute('aria-hidden','false');
+      clearErrors();
+    }
+    function showLogin() {
+      $('signupForm').classList.add('hidden');
+      $('loginForm').classList.remove('hidden');
+      $('signupForm').setAttribute('aria-hidden','true');
+      $('loginForm').setAttribute('aria-hidden','false');
+      clearErrors();
+    }
+
+    // show/hide error box
+    function showError(id, msg) {
+      const box = $(id);
+      if (!box) return;
+      box.textContent = msg || 'Error';
+      box.classList.remove('hidden');
+      // add small timeout to remove later (optional)
+      setTimeout(()=> {
+        // keep visible for user to read — do not auto hide immediately
+      }, 1500);
+      console.warn('AUTH ERROR:', id, msg);
+    }
+    function hideError(id) {
+      const box = $(id);
+      if (!box) return;
+      box.classList.add('hidden');
+      box.textContent = '';
+    }
+    function clearErrors() {
+      hideError('loginError'); hideError('signupError');
+      ['loginEmail','loginPassword','fullname','email','password','confirmpassword'].forEach(id=>{
+        const el = $(id); if(el) el.classList.remove('input-error');
+      });
+    }
+
+    /* SIGNUP */
+    async function signupHandler(e) {
+      if (e && e.preventDefault) e.preventDefault();
+      clearErrors();
+
+      const fullname = $('fullname'); const email = $('email');
+      const mobile = $('mobile'); const age = $('age'); const bloodgroup = $('bloodgroup');
+      const profession = $('profession'); const password = $('password'); const confirm = $('confirmpassword');
+
+      // basic validation
+      if (!fullname.value || !email.value || !password.value) {
+        if (!fullname.value) fullname.classList.add('input-error');
+        if (!email.value) email.classList.add('input-error');
+        if (!password.value) password.classList.add('input-error');
+        showError('signupError', '❗ Please fill required fields (name, email, password).');
+        return;
+      }
+      if (password.value !== confirm.value) {
+        password.classList.add('input-error'); confirm.classList.add('input-error');
+        showError('signupError', '❗ Passwords do not match.');
+        return;
+      }
+
+      // prepare payload
+      const payload = {
+        fullname: fullname.value.trim(),
+        email: email.value.trim().toLowerCase(),
+        mobile: mobile.value.trim(),
+        age: age.value ? Number(age.value) : 0,
+        bloodgroup: bloodgroup.value || '',
+        profession: profession.value.trim(),
+        password: password.value
+      };
+
+      try {
+        console.log('Sending signup payload', payload);
+        const res = await fetch(API + '/signup', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+
+        let data = null;
+        try { data = await res.json(); } catch(e){ console.error('Signup invalid JSON', e); }
+
+        console.log('Signup returned', res.status, data);
+        if (!res.ok) {
+          const msg = data && data.message ? data.message : 'Signup failed';
+          showError('signupError', '❗ ' + msg);
+          return;
+        }
+
+        if (data && data.status === 'success') {
+          alert('Account created successfully — please login.');
+          showLogin();
+          // Optionally auto-fill login email:
+          const loginEmail = $('loginEmail'); if (loginEmail) loginEmail.value = payload.email;
+        } else {
+          const msg = data && data.message ? data.message : 'Signup failed';
+          showError('signupError', '❗ ' + msg);
+        }
+      } catch (err) {
+        console.error('Network error on signup', err);
+        showError('signupError', '❗ Network error — check backend is running.');
+      }
+    }
+
+    /* LOGIN */
+    async function loginHandler(e) {
+      if (e && e.preventDefault) e.preventDefault();
+      clearErrors();
+
+      const email = $('loginEmail'); const password = $('loginPassword');
+
+      if (!email.value || !password.value) {
+        if (!email.value) email.classList.add('input-error');
+        if (!password.value) password.classList.add('input-error');
+        showError('loginError', '❗ Enter email & password.');
+        return;
+      }
+
+      const payload = { email: email.value.trim().toLowerCase(), password: password.value };
+
+      try {
+        console.log('Sending login payload', payload);
+        const res = await fetch(API + '/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+
+        let data = null;
+        try { data = await res.json(); } catch(e){ console.error('Login invalid JSON', e); }
+
+        console.log('Login returned', res.status, data);
+        if (!res.ok) {
+          const msg = data && data.message ? data.message : `HTTP ${res.status}`;
+          showError('loginError', '❗ ' + msg);
+          return;
+        }
+
+        if (!data) {
+          showError('loginError', '❗ Empty response from server');
+          return;
+        }
+
+        if (data.status !== 'success') {
+          showError('loginError', '❗ ' + (data.message || 'Login failed'));
+          email.classList.add('input-error'); password.classList.add('input-error');
+          return;
+        }
+
+        // success: save token + user
+        
+        localStorage.setItem('userName', data.user && data.user.fullname ? data.user.fullname : '');
+        localStorage.setItem('email', data.user && data.user.email ? data.user.email : '');
+
+        // redirect to index (protected pages should check token)
+        localStorage.setItem("token", data.token);
+        alert('Login successful!');
+        window.location.href = 'index.html';
+
+      } catch (err) {
+        console.error('Network error during login', err);
+        showError('loginError', '❗ Network error — check backend & CORS.');
+      }
+    }
+
+    /* Google buttons (placeholder) */
+    function googleLogin() { alert('Google login requires Firebase setup. Tell me when you are ready.'); }
+    function googleSignup() { alert('Google signup requires Firebase setup. Tell me when you are ready.'); }
+
+    /* logout helper (if needed) */
+    function logout() {
+    localStorage.clear();
+    window.location.href = "auth.html";
+}
+
+
+
+    /* Attach events on load */
+    document.addEventListener('DOMContentLoaded', function() {
+      // wire up buttons and links
+      const loginBtn = $('loginBtn');
+      const signupBtn = $('signupBtn');
+      const toSignup = $('toSignup');
+      const toLogin = $('toLogin');
+      const googleLoginBtn = $('googleLoginBtn');
+
+      if (loginBtn) loginBtn.addEventListener('click', loginHandler);
+      if (signupBtn) signupBtn.addEventListener('click', signupHandler);
+      if (toSignup) toSignup.addEventListener('click', showSignup);
+      if (toLogin) toLogin.addEventListener('click', showLogin);
+      if (googleLoginBtn) googleLoginBtn.addEventListener('click', googleLogin);
+
+      // also allow Enter on password fields
+      const p1 = $('loginPassword'); if (p1) p1.addEventListener('keypress', (e)=>{ if (e.key==='Enter') loginHandler(e);});
+      const p2 = $('confirmpassword'); if (p2) p2.addEventListener('keypress', (e)=>{ if (e.key==='Enter') signupHandler(e);});
+
+      // hide error boxes initially
+      clearErrors();
+    });
+
+    // expose showLogin/Signup so inline calls still work if present
+    window.showLogin = showLogin;
+    window.showSignup = showSignup;
+  })();
+  </script>
+
+</body>
+</html>

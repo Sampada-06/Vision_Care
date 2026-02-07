@@ -24,7 +24,7 @@
             </div>
             <nav class="hidden md:flex items-center gap-6">
                 <a href="index.html" class="nav-link text-slate-600 hover:text-blue-600 transition-colors dark:text-slate-400 dark:hover:text-blue-500">Home</a>
-                 <a href="learn.html" class="nav-link text-slate-600 hover:text-blue-600 transition-colors dark:text-slate-400 dark:hover:text-blue-500">Learn</a>
+                <a href="learn.html" class="nav-link text-slate-600 hover:text-blue-600 transition-colors dark:text-slate-400 dark:hover:text-blue-500">Learn</a>
                 <a href="symptom-checker.html" class="nav-link text-slate-600 hover:text-blue-600 transition-colors dark:text-slate-400 dark:hover:text-blue-500">Symptom Checker</a>
                 <a href="history.html" class="nav-link text-slate-600 hover:text-blue-600 transition-colors dark:text-slate-400 dark:hover:text-blue-500">Test History</a>
             </nav>
@@ -51,18 +51,21 @@
                                     <line x1="50" y1="50" x2="50" y2="10" transform="rotate(45, 50, 50)" />
                                     <line x1="50" y1="50" x2="50" y2="10" transform="rotate(60, 50, 50)" />
                                     <line x1="50" y1="50" x2="50" y2="10" transform="rotate(75, 50, 50)" />
+
                                     <line x1="50" y1="50" x2="90" y2="50" />
                                     <line x1="50" y1="50" x2="90" y2="50" transform="rotate(15, 50, 50)" />
                                     <line x1="50" y1="50" x2="90" y2="50" transform="rotate(30, 50, 50)" />
                                     <line x1="50" y1="50" x2="90" y2="50" transform="rotate(45, 50, 50)" />
                                     <line x1="50" y1="50" x2="90" y2="50" transform="rotate(60, 50, 50)" />
                                     <line x1="50" y1="50" x2="90" y2="50" transform="rotate(75, 50, 50)" />
+
                                     <line x1="50" y1="50" x2="50" y2="90" />
                                     <line x1="50" y1="50" x2="50" y2="90" transform="rotate(15, 50, 50)" />
                                     <line x1="50" y1="50" x2="50" y2="90" transform="rotate(30, 50, 50)" />
                                     <line x1="50" y1="50" x2="50" y2="90" transform="rotate(45, 50, 50)" />
                                     <line x1="50" y1="50" x2="50" y2="90" transform="rotate(60, 50, 50)" />
                                     <line x1="50" y1="50" x2="50" y2="90" transform="rotate(75, 50, 50)" />
+
                                     <line x1="50" y1="50" x2="10" y2="50" />
                                     <line x1="50" y1="50" x2="10" y2="50" transform="rotate(15, 50, 50)" />
                                     <line x1="50" y1="50" x2="10" y2="50" transform="rotate(30, 50, 50)" />
@@ -88,10 +91,52 @@
         </main>
     </div>
 
+    <!-- ===================================================== -->
+    <!--         BACKEND AUTO SAVE FUNCTION (FIXED)            -->
+    <!-- ===================================================== -->
     <script>
-        // Add JavaScript for test logic here
-        document.addEventListener('DOMContentLoaded', () => {
-    // This function will handle the logic for both test pages
+// === AUTO SAVE TO BACKEND FOR ASTIGMATISM TEST ===
+// (Backend-friendly — only string result sent)
+async function saveAstigmatismHistoryAuto(finalResultObj) {
+    try {
+        const token = localStorage.getItem("token");
+        if (!token) {
+            console.warn("User not logged in → skipping astigmatism history save.");
+            return;
+        }
+
+        // Convert result to string (required by backend)
+        const resultString =
+            `Overall: ${finalResultObj.overallResult} | ` +
+            `Right Eye: ${finalResultObj.rightEyeDistorted ? "Distorted" : "Normal"} | ` +
+            `Left Eye: ${finalResultObj.leftEyeDistorted ? "Distorted" : "Normal"} | ` +
+            `Message: ${finalResultObj.recommendation}`;
+
+        const res = await fetch("http://localhost:5000/api/history/save", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                token,
+                testName: "Astigmatism Test",
+                result: resultString
+            })
+        });
+
+        const data = await res.json();
+        console.log("Astigmatism auto-save:", data);
+
+    } catch (err) {
+        console.error("Error auto-saving Astigmatism history:", err);
+    }
+}
+    </script>
+
+    <!-- ===================================================== -->
+    <!--               MAIN ASTIGMATISM TEST LOGIC             -->
+    <!-- ===================================================== -->
+    <script>
+document.addEventListener('DOMContentLoaded', () => {
+
     const handleTestLogic = (testType) => {
         const eyeToCoverEl = document.getElementById('eye-to-cover');
         const resultMessageEl = document.getElementById('result-message');
@@ -99,7 +144,6 @@
         const instructionTextEl = document.getElementById('instruction-text');
         const testContentEl = document.getElementById('test-content');
 
-        // Exit if the necessary elements for the test are not on the page
         if (!eyeToCoverEl || !resultMessageEl || answerBtns.length === 0 || !instructionTextEl) {
             return; 
         }
@@ -113,21 +157,18 @@
         const updateUIForNextEye = () => {
             currentEye = 'left';
             eyeToCoverEl.textContent = 'right';
-            
-            // Create a temporary element to safely manipulate HTML content
+
             const tempDiv = document.createElement('div');
             tempDiv.innerHTML = instructionTextEl.innerHTML;
-            
-            // Update the eye references in the instructions
+
             tempDiv.innerHTML = tempDiv.innerHTML.replace('left</strong> eye', '<strong id="eye-to-cover">right</strong> eye');
             tempDiv.innerHTML = tempDiv.innerHTML.replace('right eye', 'left eye');
 
             instructionTextEl.innerHTML = tempDiv.innerHTML;
-            
+
             resultMessageEl.textContent = 'Now, test your other eye.';
             resultMessageEl.className = 'mt-8 text-lg font-medium h-12 text-blue-600 dark:text-blue-400';
-            
-            // Clear the message after a short delay
+
             setTimeout(() => {
                 resultMessageEl.textContent = '';
             }, 2500);
@@ -144,39 +185,30 @@
             
             if (results.rightEyeDistorted || results.leftEyeDistorted) {
                 overallResult = 'Distortion Noted';
-                finalMessage = 'Distortions were detected. It is recommended to consult an eye care professional for a comprehensive exam.';
+                finalMessage = 'Distortions were detected. It is recommended to consult an eye care professional.';
                 resultMessageEl.className = 'mt-8 text-lg font-medium h-12 text-red-600 dark:text-red-400';
             } else {
                 overallResult = 'Normal';
-                finalMessage = 'No distortions detected. Your vision appears normal for this test.';
+                finalMessage = 'No distortions detected. Your vision appears normal.';
                 resultMessageEl.className = 'mt-8 text-lg font-medium h-12 text-green-600 dark:text-green-400';
             }
             resultMessageEl.textContent = finalMessage;
-            
-            // Add a "Back to Home" button after the test is complete
+
+            // SAVE RESULTS TO BACKEND
+            const finalObj = {
+                timestamp: new Date().toISOString(),
+                rightEyeDistorted: results.rightEyeDistorted,
+                leftEyeDistorted: results.leftEyeDistorted,
+                overallResult,
+                recommendation: finalMessage
+            };
+            saveAstigmatismHistoryAuto(finalObj);
+
             const homeButton = document.createElement('a');
             homeButton.href = 'index.html';
             homeButton.className = 'mt-6 inline-block bg-blue-600 text-white font-semibold px-6 py-3 rounded-lg hover:bg-blue-700 transition-all';
             homeButton.textContent = 'Back to Home';
             testContentEl.appendChild(homeButton);
-
-
-            // --- Save to Local Storage History ---
-            try {
-                const history = JSON.parse(localStorage.getItem('visionCareHistory')) || [];
-                const testResult = {
-                    date: new Date().toISOString(),
-                    // A placeholder for a more complete result object
-                    acuity: { leftEyeDiopter: 0, rightEyeDiopter: 0 },
-                    color: { score: 'N/A' },
-                    amsler: { distorted: testType === 'Amsler Grid' ? (overallResult !== 'Normal') : 'N/A' },
-                    astigmatism: { distorted: testType === 'Astigmatism' ? (overallResult !== 'Normal') : 'N/A' }
-                };
-                history.push(testResult);
-                localStorage.setItem('visionCareHistory', JSON.stringify(history));
-            } catch (e) {
-                console.error("Failed to save history to localStorage:", e);
-            }
         };
 
         answerBtns.forEach(btn => {
@@ -194,17 +226,14 @@
         });
     };
 
-    // Check which test page is currently active and initialize its logic
     if (document.getElementById('astigmatism-test-screen')) {
         handleTestLogic('Astigmatism');
     }
 
-    if (document.getElementById('amsler-test-screen')) {
-        handleTestLogic('Amsler Grid');
-    }
 });
-
-        // e.g., handle button clicks, switch eyes, show results
     </script>
+
+    <script type="module" src="js/nav-auth.js"></script>
+
 </body>
 </html>

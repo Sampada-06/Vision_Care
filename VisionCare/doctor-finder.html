@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Find Nearby Eye Doctors | VisionCare</title>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        // 1. Configure Tailwind to use the 'dark' class
+        tailwind.config = {
+            darkMode: 'class',
+        }
+    </script>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body class="bg-slate-50 text-slate-800 dark:bg-slate-900 dark:text-slate-100 transition-colors duration-300">
+
+    <div class="max-w-7xl mx-auto p-4 md:p-8">
+        <header class="flex justify-between items-center pb-4 border-b border-slate-200 dark:border-slate-700">
+            <div class="flex items-center gap-3">
+                <svg class="w-8 h-8 text-blue-600 dark:text-blue-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round"
+                        d="M2.036 12.322a1.012 1.012 0 010-.639l4.433-7.447A1 1 0 017.48 4h9.04a1 1 0 01.994.883l4.433 7.447a1.012 1.012 0 010 .639l-4.433 7.447A1 1 0 0116.52 20h-9.04a1 1 0 01-.994-.883l-4.433-7.447z"/>
+                    <path stroke-linecap="round" stroke-linejoin="round"
+                        d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                </svg>
+                <h1 class="text-2xl font-bold">VisionCare</h1>
+            </div>
+
+            <nav class="hidden md:flex items-center gap-6">
+                <a href="index.html" class="text-slate-600 dark:text-slate-300 hover:text-blue-600 dark:hover:text-blue-400">Home</a>
+                <a href="learn.html" class="text-slate-600 dark:text-slate-300 hover:text-blue-600 dark:hover:text-blue-400">Learn</a>
+                <a href="symptom-checker.html" class="text-slate-600 dark:text-slate-300 hover:text-blue-600 dark:hover:text-blue-400">Symptom Checker</a>
+                <a href="history.html" class="text-slate-600 dark:text-slate-300 hover:text-blue-600 dark:hover:text-blue-400">Test History</a>
+                
+                <button id="dark-mode-toggle" class="p-2 rounded-full hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors border border-transparent dark:border-slate-600">
+                   <svg id="theme-icon-light" xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" /></svg>                    
+                   <svg id="theme-icon-dark" xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" /></svg>
+                </button>
+
+                <a href="test.html" class="bg-blue-600 text-white font-semibold px-5 py-2 rounded-lg hover:bg-blue-700 transition-all shadow-sm">Start New Test</a>
+                <button onclick="logout()" class="bg-red-500 text-white px-4 py-2 rounded-lg shadow hover:bg-red-600 transition">
+                    Logout
+                </button>
+            </nav>
+        </header>
+    </div>
+
+    <div class="max-w-4xl mx-auto py-10 px-4">
+
+        <h1 class="text-4xl font-bold text-center mb-6">Find Nearby Eye Specialists 👁️</h1>
+        <p class="text-center text-lg text-slate-600 dark:text-slate-400 mb-8">
+            Locate trusted ophthalmologists, optometrists, and clinics near you using OpenStreetMap.
+        </p>
+
+        <div class="bg-white dark:bg-slate-800 p-6 rounded-xl shadow-md border border-slate-200 dark:border-slate-700">
+            <button id="findBtn"
+                class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-lg shadow-lg transition">
+                Find Nearby Doctors
+            </button>
+
+            <p id="status" class="mt-4 text-sm text-blue-700 dark:text-blue-400 font-medium"></p>
+        </div>
+
+        <div id="results" class="mt-8"></div>
+
+    </div>
+
+    <script>
+        // --- 2. DARK MODE LOGIC ---
+        const themeToggleBtn = document.getElementById('dark-mode-toggle');
+        const themeIconLight = document.getElementById('theme-icon-light');
+        const themeIconDark = document.getElementById('theme-icon-dark');
+        const htmlElement = document.documentElement;
+
+        // Check for saved user preference
+        if (localStorage.getItem('theme') === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            htmlElement.classList.add('dark');
+            themeIconLight.classList.add('hidden');
+            themeIconDark.classList.remove('hidden');
+        }
+
+        themeToggleBtn.addEventListener('click', () => {
+            htmlElement.classList.toggle('dark');
+            
+            if (htmlElement.classList.contains('dark')) {
+                themeIconLight.classList.add('hidden');
+                themeIconDark.classList.remove('hidden');
+                localStorage.setItem('theme', 'dark');
+            } else {
+                themeIconLight.classList.remove('hidden');
+                themeIconDark.classList.add('hidden');
+                localStorage.setItem('theme', 'light');
+            }
+        });
+
+        // --- 3. DOCTOR FINDER LOGIC ---
+        document.getElementById("findBtn").addEventListener("click", () => {
+            const status = document.getElementById("status");
+            const resultsDiv = document.getElementById("results");
+
+            status.innerText = "Detecting location...";
+            resultsDiv.innerHTML = "";
+
+            navigator.geolocation.getCurrentPosition(success, error);
+
+            function error() {
+                status.innerText = "❌ Location access denied. Please allow location permission.";
+            }
+
+            async function success(pos) {
+                const lat = pos.coords.latitude;
+                const lng = pos.coords.longitude;
+
+                status.innerText = "Searching for nearby doctors...";
+
+                try {
+                    const response = await fetch(`http://127.0.0.1:8000/api/doctor-finder/nearby?lat=${lat}&lng=${lng}`);
+                    const data = await response.json();
+
+                    status.innerText = `Found ${data.results.length} specialists near you`;
+
+                    resultsDiv.innerHTML = data.results.map(doc => `
+                        <div class="p-5 mb-4 bg-white dark:bg-slate-800 rounded-xl shadow-md border border-slate-200 dark:border-slate-700">
+                            <h2 class="text-xl font-bold text-blue-700 dark:text-blue-400">${doc.name}</h2>
+                            <p class="text-slate-600 dark:text-slate-300">${doc.address}</p>
+                            <p class="mt-2"><strong>Type:</strong> ${doc.type}</p>
+                            <a href="https://www.openstreetmap.org/?mlat=${doc.lat}&mlon=${doc.lng}#map=18/${doc.lat}/${doc.lng}"
+                               target="_blank"
+                               class="text-blue-600 dark:text-blue-400 underline mt-3 inline-block">
+                               📍 View on OSM Maps
+                            </a>
+                        </div>
+                    `).join("");
+                } catch (err) {
+                    status.innerText = "❌ Error connecting to the server. Make sure FastAPI is running.";
+                }
+            }
+        });
+
+        function logout() {
+            alert("Logging out...");
+            // Add your actual logout logic here
+        }
+    </script>
+
+</body>
+</html>
