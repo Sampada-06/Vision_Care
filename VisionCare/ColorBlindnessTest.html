@@ -8,202 +8,245 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <!-- Make sure the path to your style.css file is correct -->
-    <link rel="stylesheet" href="style.css"> 
+    <link rel="stylesheet" href="style.css">
 
+    <style>
+        /* FIXED PRELOADER */
+        #preloader {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 100%;
+            width: 100%;
+            background: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+        }
+
+        #preloader.hidden {
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.5s ease-out;
+        }
+    </style>
 </head>
+
 <body class="bg-slate-50 text-slate-800">
 
-    <div id="preloader">
-        <div class="preloader-logo">
-            <svg class="w-16 h-16 text-blue-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 010-.639l4.433-7.447A1 1 0 017.48 4h9.04a1 1 0 01.994.883l4.433 7.447a1.012 1.012 0 010 .639l-4.433 7.447A1 1 0 0116.52 20h-9.04a1 1 0 01-.994-.883l-4.433-7.447z" />
-                <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-            </svg>
-        </div>
+<!-- PRELOADER -->
+<div id="preloader">
+    <div class="preloader-logo">
+        <svg class="w-16 h-16 text-blue-600 animate-spin" xmlns="http://www.w3.org/2000/svg"
+             fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round"
+                  d="M2.036 12.322a1.012 1.012 0 010-.639l4.433-7.447A1 1 0 017.48 4h9.04a1 1 0 01.994.883l4.433 7.447a1 012 0 010 .639l-4.433 7.447A1 1 0 0116.52 20h-9.04a1 1 0 01-.994-.883l-4.433-7.447z"/>
+            <path stroke-linecap="round" stroke-linejoin="round"
+                  d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+        </svg>
+    </div>
+</div>
+
+<!-- APP WRAPPER -->
+<div id="app" class="max-w-7xl mx-auto p-4 md:p-8">
+
+<header class="flex justify-between items-center pb-4 border-b border-slate-200">
+    <div class="flex items-center gap-3">
+        <svg class="w-8 h-8 text-blue-600" xmlns="http://www.w3.org/2000/svg" fill="none"
+             viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round"
+                  d="M2.036 12.322a1.012 1.012 0 010-.639l4.433-7.447A1 1 0 017.48 4h9.04a1 1 0 01.994.883l4.433 7.447a1 012 0 010 .639l-4.433 7.447A1 1 0 0116.52 20h-9.04a1 1 0 01-.994-.883l-4.433-7.447z"/>
+            <path stroke-linecap="round" stroke-linejoin="round"
+                  d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+        </svg>
+        <h1 class="text-2xl font-bold">VisionCare</h1>
     </div>
 
-    <div id="app" class="max-w-7xl mx-auto p-4 md:p-8">
-        <header class="flex justify-between items-center pb-4 border-b border-slate-200">
-            <div class="flex items-center gap-3">
-                 <svg class="w-8 h-8 text-blue-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 010-.639l4.433-7.447A1 1 0 017.48 4h9.04a1 1 0 01.994.883l4.433 7.447a1.012 1.012 0 010 .639l-4.433 7.447A1 1 0 0116.52 20h-9.04a1 1 0 01-.994-.883l-4.433-7.447z" /><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
-                <h1 class="text-2xl font-bold">VisionCare</h1>
-            </div>
-             <nav class="hidden md:flex items-center gap-6">
-                <a href="index.html" class="nav-link text-slate-600 hover:text-blue-600 transition-colors">Home</a>
-                <a href="learn.html" class="nav-link text-slate-600 hover:text-blue-600 transition-colors">Learn</a>
-                <a href="symptom-checker.html" class="nav-link text-slate-600 hover:text-blue-600 transition-colors">Symptom Checker</a>
-                <a href="history.html" class="nav-link text-slate-600 hover:text-blue-600 transition-colors">Test History</a>
-                <button id="dark-mode-toggle" class="p-2 rounded-full hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors">
-                    <svg id="theme-icon-light" xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" /></svg>
-                    <svg id="theme-icon-dark" xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" /></svg>
-                </button>
-            </nav>
-        </header>
+    <nav class="hidden md:flex items-center gap-6">
+        <a href="index.html" class="nav-link text-slate-600 hover:text-blue-600">Home</a>
+        <a href="learn.html" class="nav-link text-slate-600 hover:text-blue-600">Learn</a>
+        <a href="symptom-checker.html" class="nav-link text-slate-600 hover:text-blue-600">Symptom Checker</a>
+        <a href="history.html" class="nav-link text-slate-600 hover:text-blue-600">Test History</a>
+    </nav>
+</header>
 
-        <main class="test-page-main">
-            <section id="test-screen" class="fade-in">
-                <div class="max-w-3xl mx-auto mt-8 bg-white p-8 rounded-2xl shadow-lg">
-                    <div id="color-test-step" class="text-center">
-                        <h3 class="text-2xl font-bold">Color Vision Test</h3>
-                        <p id="color-test-instruction" class="mt-2 text-slate-600">What number do you see in the plate below?</p>
-                        
-                        <!-- Progress Bar -->
-                        <div class="mt-4">
-                            <div class="relative pt-1">
-                                <div class="flex mb-2 items-center justify-between">
-                                    <div><span id="progress-text" class="text-xs font-semibold inline-block text-blue-600"></span></div>
-                                </div>
-                                <div class="overflow-hidden h-2 mb-4 text-xs flex rounded bg-blue-200">
-                                    <div id="progress-bar" style="width: 0%" class="shadow-none flex flex-col text-center whitespace-nowrap text-white justify-center bg-blue-600 transition-all duration-300"></div>
-                                </div>
-                            </div>
-                        </div>
+<main class="test-page-main">
+<section id="test-screen" class="fade-in">
+    <div class="max-w-3xl mx-auto mt-8 bg-white p-8 rounded-2xl shadow-lg">
 
-                        <!-- Image Container -->
-                        <div class="my-6 flex justify-center">
-                            <div class="w-64 h-64 md:w-80 md:h-80 flex items-center justify-center bg-white rounded-full">
-                                <img id="ishihara-plate" src="" alt="Ishihara Plate" class="max-w-full max-h-full object-contain">
-                            </div>
-                        </div>
+        <div id="color-test-step" class="text-center">
 
-                        <!-- Answer Buttons -->
-                        <div id="answer-buttons" class="grid grid-cols-2 md:grid-cols-4 gap-4 mt-6">
-                            <!-- Buttons will be dynamically inserted here -->
+            <h3 class="text-2xl font-bold">Color Vision Test</h3>
+            <p id="color-test-instruction" class="mt-2 text-slate-600">
+                What number do you see in the plate below?
+            </p>
+
+            <!-- Progress Bar -->
+            <div class="mt-4">
+                <div class="relative pt-1">
+                    <div class="flex mb-2 items-center justify-between">
+                        <span id="progress-text" class="text-xs font-semibold text-blue-600"></span>
+                    </div>
+                    <div class="overflow-hidden h-2 mb-4 text-xs flex rounded bg-blue-200">
+                        <div id="progress-bar"
+                             class="shadow-none flex flex-col whitespace-nowrap bg-blue-600 transition-all"
+                             style="width:0%">
                         </div>
-                        
-                        <!-- Feedback Message -->
-                        <p id="feedback-message" class="mt-4 text-lg font-semibold h-6"></p>
                     </div>
                 </div>
-            </section>
-        </main>
+            </div>
+
+            <!-- Plate Image -->
+            <div class="my-6 flex justify-center">
+                <div class="w-64 h-64 md:w-80 md:h-80 flex items-center justify-center bg-white rounded-full">
+                    <img id="ishihara-plate" src="" class="max-w-full max-h-full object-contain">
+                </div>
+            </div>
+
+            <!-- Answer Buttons -->
+            <div id="answer-buttons" class="grid grid-cols-2 md:grid-cols-4 gap-4 mt-6"></div>
+
+            <p id="feedback-message" class="mt-4 text-lg font-semibold h-6"></p>
+        </div>
+
     </div>
-    
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            // --- GENERAL WEBSITE FUNCTIONALITY ---
-            const preloader = document.getElementById('preloader');
-            const darkModeToggle = document.getElementById('dark-mode-toggle');
-            const themeIconLight = document.getElementById('theme-icon-light');
-            const themeIconDark = document.getElementById('theme-icon-dark');
+</section>
+</main>
+</div>
 
-            if(preloader) {
-                window.addEventListener('load', () => {
-                    preloader.classList.add('hidden');
-                });
-            }
+<script>
+/* --------------------------------------------
+   FIX: HIDE PRELOADER WHEN PAGE LOADS
+---------------------------------------------*/
+window.addEventListener("load", () => {
+    const preloader = document.getElementById("preloader");
+    preloader.classList.add("hidden");
+});
 
-            if(darkModeToggle && themeIconLight && themeIconDark) {
-                if (localStorage.getItem('color-theme') === 'dark' || 
-                   (!('color-theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
-                    document.documentElement.classList.add('dark');
-                    themeIconLight.classList.add('hidden');
-                    themeIconDark.classList.remove('hidden');
-                } else {
-                    document.documentElement.classList.remove('dark');
-                    themeIconLight.classList.remove('hidden');
-                    themeIconDark.classList.add('hidden');
-                }
+document.addEventListener("DOMContentLoaded", () => {
 
-                darkModeToggle.addEventListener('click', () => {
-                    document.documentElement.classList.toggle('dark');
-                    themeIconLight.classList.toggle('hidden');
-                    themeIconDark.classList.toggle('hidden');
-                    const theme = document.documentElement.classList.contains('dark') ? 'dark' : 'light';
-                    localStorage.setItem('color-theme', theme);
-                });
-            }
+    // AUTO-SAVE FUNCTION
+    async function saveHistory(testName, resultObj) {
+        const token = localStorage.getItem("token");
+        if (!token) return;
 
-            // --- COLOR BLINDNESS TEST PAGE SPECIFIC LOGIC ---
-            if (document.getElementById('color-test-step')) {
-                const plateImage = document.getElementById('ishihara-plate');
-                const answerButtonsContainer = document.getElementById('answer-buttons');
-                const feedbackMessage = document.getElementById('feedback-message');
-                const testStepDiv = document.getElementById('color-test-step');
-                const progressBar = document.getElementById('progress-bar');
-                const progressText = document.getElementById('progress-text');
+        try {
+            await fetch("http://localhost:5000/api/history/save", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    token,
+                    testName,
+                    result: resultObj
+                })
+            });
+        } catch (err) {
+            console.error("Save failed:", err);
+        }
+    }
 
-                const testPlates = [
-    { src: 'ColorBlindness2.png', options: [74, 70, 71, "Nothing"], answer: 74 },
-    { src: 'ColorBlindness1.png', options: [6, 9, 5, "Nothing"], answer: 9 },
-    { src: 'nothing.png', options: [2, 7, 9, "Nothing"], answer: "Nothing" },
-    { src: '21.png', options: [21, 20, 30, "Nothing"], answer: 21 },
-    { src: '35.png', options: [52, 39, 35, "Nothing"], answer: 35 },
-    { src: '45.png', options: [45, 48, 56, "Nothing"], answer: 45 },
-    { src: '8.png', options: [3, 5, 8, "Nothing"], answer: 8 },
-    { src: '6.png', options: [7, 9, 6, "Nothing"], answer: 6 }
-];
+    // TEST LOGIC
+    const plateImg = document.getElementById("ishihara-plate");
+    const answerButtons = document.getElementById("answer-buttons");
+    const progressBar = document.getElementById("progress-bar");
+    const progressText = document.getElementById("progress-text");
+    const feedback = document.getElementById("feedback-message");
+    const testContainer = document.getElementById("color-test-step");
 
-                let currentPlateIndex = 0;
-                let score = 0;
+    const plates = [
+        { src: "ColorBlindness2.png", options: [74,70,71,"Nothing"], answer: 74 },
+        { src: "ColorBlindness1.png", options: [6,9,5,"Nothing"], answer: 9 },
+        { src: "nothing.png", options: [2,7,9,"Nothing"], answer: "Nothing" },
+        { src: "21.png", options: [21,20,30,"Nothing"], answer: 21 },
+        { src: "35.png", options: [52,39,35,"Nothing"], answer: 35 },
+        { src: "45.png", options: [45,48,56,"Nothing"], answer: 45 },
+        { src: "8.png", options: [3,5,8,"Nothing"], answer: 8 },
+        { src: "6.png", options: [7,9,6,"Nothing"], answer: 6 }
+    ];
 
-                function loadPlate(index) {
-                    if (index >= testPlates.length) {
-                        endTest();
-                        return;
-                    }
+    let index = 0;
+    let score = 0;
 
-                    const plate = testPlates[index];
-                    plateImage.src = plate.src;
-                    answerButtonsContainer.innerHTML = ''; 
+    function loadPlate(i) {
+        if (i >= plates.length) return finishTest();
 
-                    const progressPercentage = (index / testPlates.length) * 100;
-                    progressBar.style.width = `${progressPercentage}%`;
-                    progressText.textContent = `Plate ${index + 1} of ${testPlates.length}`;
+        const p = plates[i];
+        plateImg.src = p.src;
+        answerButtons.innerHTML = "";
 
-                    plate.options.forEach(option => {
-                        const button = document.createElement('button');
-                        button.textContent = option;
-                        button.className = "bg-slate-100 hover:bg-slate-200 dark:bg-slate-700 dark:hover:bg-slate-600 text-slate-800 dark:text-slate-200 font-semibold py-4 px-6 rounded-lg transition-colors duration-200";
-                        button.onclick = () => handleAnswer(option, plate.answer, button);
-                        answerButtonsContainer.appendChild(button);
-                    });
-                }
+        progressBar.style.width = `${(i / plates.length) * 100}%`;
+        progressText.textContent = `Plate ${i+1} of ${plates.length}`;
 
-                function handleAnswer(selectedOption, correctAnswer, button) {
-                    Array.from(answerButtonsContainer.children).forEach(btn => btn.disabled = true);
-
-                    if (selectedOption === correctAnswer) {
-                        score++;
-                        feedbackMessage.textContent = "Correct!";
-                        feedbackMessage.className = "mt-4 text-lg font-semibold h-6 text-green-500";
-                        button.classList.add('bg-green-500', 'text-white');
-                    } else {
-                        feedbackMessage.textContent = "Incorrect";
-                        feedbackMessage.className = "mt-4 text-lg font-semibold h-6 text-red-500";
-                        button.classList.add('bg-red-500', 'text-white');
-                    }
-
-                    setTimeout(() => {
-                        currentPlateIndex++;
-                        feedbackMessage.textContent = '';
-                        loadPlate(currentPlateIndex);
-                    }, 1200);
-                }
-
-                function endTest() {
-                    progressBar.style.width = `100%`;
-                    progressText.textContent = `Test Complete`;
-                    
-                    const percentage = Math.round((score / testPlates.length) * 100);
-                    let resultText = `You correctly identified ${score} out of ${testPlates.length} plates.`;
-                    let diagnosis = (percentage >= 85)
-                        ? "Your color vision appears to be normal."
-                        : "The results suggest you may have a color vision deficiency. Please consult an optometrist for a formal diagnosis.";
-
-                    testStepDiv.innerHTML = `
-                        <h3 class="text-2xl font-bold">Color Test Results</h3>
-                        <p class="mt-4 text-lg">${resultText}</p>
-                        <p class="mt-2 text-lg font-medium">${diagnosis}</p>
-                        <p class="mt-4 text-sm text-slate-600">This is a screening tool and not a substitute for a professional medical diagnosis.</p>
-                        <button onclick="window.location.reload()" class="mt-6 bg-blue-600 text-white font-semibold px-6 py-3 rounded-lg hover:bg-blue-700 transition-all">Take Test Again</button>
-                    `;
-                }
-
-                loadPlate(currentPlateIndex);
-            }
+        p.options.forEach(opt => {
+            const btn = document.createElement("button");
+            btn.textContent = opt;
+            btn.className = "bg-slate-100 hover:bg-slate-200 font-semibold py-4 px-6 rounded-lg";
+            btn.onclick = () => checkAnswer(opt, p.answer, btn);
+            answerButtons.appendChild(btn);
         });
-    </script>
+    }
+
+    function checkAnswer(selected, correct, btn) {
+        [...answerButtons.children].forEach(b => b.disabled = true);
+
+        if (selected === correct) {
+            score++;
+            feedback.textContent = "Correct!";
+            feedback.className = "mt-4 text-green-500 font-semibold";
+            btn.classList.add("bg-green-500", "text-white");
+        } else {
+            feedback.textContent = "Incorrect";
+            feedback.className = "mt-4 text-red-500 font-semibold";
+            btn.classList.add("bg-red-500", "text-white");
+        }
+
+        setTimeout(() => {
+            index++;
+            feedback.textContent = "";
+            loadPlate(index);
+        }, 1200);
+    }
+
+    function finishTest() {
+        progressBar.style.width = "100%";
+        progressText.textContent = "Test Complete";
+
+        const percentage = Math.round((score / plates.length) * 100);
+        const diagnosis =
+            percentage >= 85
+            ? "Your color vision appears normal."
+            : "Possible color vision deficiency — professional testing recommended.";
+
+        // SAVE FINAL RESULT
+        saveHistory("Color Vision Test", {
+            score,
+            total: plates.length,
+            percentage,
+            diagnosis,
+            timestamp: new Date().toISOString()
+        });
+
+        testContainer.innerHTML = `
+            <h3 class="text-2xl font-bold">Color Test Results</h3>
+            <p class="mt-4 text-lg">
+                You correctly identified ${score} out of ${plates.length} plates.
+            </p>
+            <p class="mt-2 text-lg font-medium">${diagnosis}</p>
+            <p class="mt-4 text-sm text-slate-600">
+                This is a screening tool. Not a medical diagnosis.
+            </p>
+
+            <button onclick="window.location.reload()"
+                    class="mt-6 bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700">
+                Take Test Again
+            </button>
+        `;
+    }
+
+    loadPlate(index);
+});
+</script>
+
 </body>
 </html>
